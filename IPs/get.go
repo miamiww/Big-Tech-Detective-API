@@ -1,6 +1,7 @@
 package IPs
 
 import (
+	"net/IP"
 	"net/http"
 	"github.com/gocql/gocql"
 	"encoding/json"
@@ -40,15 +41,15 @@ func GetOne(w http.ResponseWriter, r *http.Request) {
 	var found bool = false
 
 	vars := mux.Vars(r)
-	id := vars["ip_uuid"]
+	ip_id := vars["ipv4"]
 
-	uuid, err := gocql.ParseUUID(id)
+	ip_address, err := ParseIP(ip_id, string)
 	if err != nil {
 		errs = append(errs, err.Error())
 	} else {
 		m := map[string]interface{}{}
-		query := "SELECT id,ipv4,company FROM ips WHERE id=? LIMIT 1"
-		iterable := Cassandra.Session.Query(query, uuid).Consistency(gocql.One).Iter()
+		query := "SELECT id,ipv4,company FROM ips WHERE ipv4=? LIMIT 1"
+		iterable := Cassandra.Session.Query(query, ip_address).Consistency(gocql.One).Iter()
 		for iterable.MapScan(m) {
 			found = true
 			ip = IP{
