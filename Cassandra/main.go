@@ -8,7 +8,7 @@ var Session *gocql.Session //making Session accessible outside of the package
 func init() {
   var err error
   cluster := gocql.NewCluster("127.0.0.1")
-  cluster.Keyspace = "streamdemoapi"
+  cluster.Keyspace = "ipdatabase"
   Session, err = cluster.CreateSession()
   if err != nil {
     panic(err)
