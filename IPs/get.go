@@ -1,7 +1,7 @@
 package IPs
 
 import (
-	"net/IP"
+	"net"
 	"net/http"
 	"github.com/gocql/gocql"
 	"encoding/json"
@@ -42,14 +42,13 @@ func GetOne(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	ip_id := vars["ipv4"]
-
-	ip_address, err := ParseIP(ip_id, string)
-	if err != nil {
-		errs = append(errs, err.Error())
-	} else {
+	ip_address_checked := net.ParseIP(ip_id)
+	if ip_address_checked == nil{
+		errs = append(errs, "not a valid IP address")
+	} else{
 		m := map[string]interface{}{}
 		query := "SELECT id,ipv4,company FROM ips WHERE ipv4=? LIMIT 1"
-		iterable := Cassandra.Session.Query(query, ip_address).Consistency(gocql.One).Iter()
+		iterable := Cassandra.Session.Query(query, ip_id).Consistency(gocql.One).Iter()
 		for iterable.MapScan(m) {
 			found = true
 			ip = IP{
@@ -58,12 +57,14 @@ func GetOne(w http.ResponseWriter, r *http.Request) {
 				Company:   m["company"].(string),
 			}
 		}
-		if !found {
-			errs = append(errs, "IP not found")
-		}
 	}
 
-	if found {
+	if !found {
+		errs = append(errs, "IP not found")
+	}
+
+
+    if found {
 		json.NewEncoder(w).Encode(GetIPResponse{IP: ip})
 	} else {
 		json.NewEncoder(w).Encode(ErrorResponse{Errors: errs})
