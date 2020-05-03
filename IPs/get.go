@@ -31,7 +31,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(AllIPsResponse{IPs: ipList})
 }
 
-// GetOne -- handles GET request to /ips/{ip_uuid} to fetch one ip
+// GetOne -- handles GET request to /ips/{ipv4} to fetch one ip
 // params:
 // w - response writer for building JSON payload response
 // r - request reader to fetch form data or url params
@@ -47,7 +47,7 @@ func GetOne(w http.ResponseWriter, r *http.Request) {
 		errs = append(errs, "not a valid IP address")
 	} else{
 		m := map[string]interface{}{}
-		query := "SELECT id,ipv4,company FROM ips WHERE ipv4='?' LIMIT 1 ALLOW FILTERING"
+		query := "SELECT id,ipv4,company FROM ipdatabase.ips WHERE ipv4='?' LIMIT 1 ALLOW FILTERING"
 		iterable := Cassandra.Session.Query(query, ip_id).Consistency(gocql.One).Iter()
 		for iterable.MapScan(m) {
 			found = true
