@@ -48,7 +48,7 @@ func GetOne(w http.ResponseWriter, r *http.Request) {
 	} else{
 		m := map[string]interface{}{}
 		query := "SELECT id,ipv4,company FROM ips WHERE ipv4='?' LIMIT 1 ALLOW FILTERING"
-		iterable := Cassandra.Session.Query(query).Consistency(gocql.One).Iter()
+		iterable := Cassandra.Session.Query(query, ip_id).Consistency(gocql.One).Iter()
 		for iterable.MapScan(m) {
 			found = true
 			ip = IP{
