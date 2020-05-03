@@ -1,6 +1,7 @@
 package IPs
 
 import (
+	"net"
 	"net/http"
 	"github.com/gocql/gocql"
 	"encoding/json"
@@ -30,7 +31,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(AllIPsResponse{IPs: ipList})
 }
 
-// GetOne -- handles GET request to /ips/{ip_uuid} to fetch one ip
+// GetOne -- handles GET request to /ips/{ipv4} to fetch one ip
 // params:
 // w - response writer for building JSON payload response
 // r - request reader to fetch form data or url params
@@ -40,15 +41,14 @@ func GetOne(w http.ResponseWriter, r *http.Request) {
 	var found bool = false
 
 	vars := mux.Vars(r)
-	id := vars["ip_uuid"]
-
-	uuid, err := gocql.ParseUUID(id)
-	if err != nil {
-		errs = append(errs, err.Error())
-	} else {
+	ip_id := vars["ipv4"]
+	ip_address_checked := net.ParseIP(ip_id)
+	if ip_address_checked == nil{
+		errs = append(errs, "not a valid IP address")
+	} else{
 		m := map[string]interface{}{}
-		query := "SELECT id,ipv4,company FROM ips WHERE id=? LIMIT 1"
-		iterable := Cassandra.Session.Query(query, uuid).Consistency(gocql.One).Iter()
+		query := "SELECT id,ipv4,company FROM ipdatabase.ips WHERE ipv4=? LIMIT 1 ALLOW FILTERING"
+		iterable := Cassandra.Session.Query(query, ip_id).Consistency(gocql.One).Iter()
 		for iterable.MapScan(m) {
 			found = true
 			ip = IP{
@@ -57,12 +57,14 @@ func GetOne(w http.ResponseWriter, r *http.Request) {
 				Company:   m["company"].(string),
 			}
 		}
-		if !found {
-			errs = append(errs, "IP not found")
-		}
 	}
 
-	if found {
+	if !found {
+		errs = append(errs, "IP not found")
+	}
+
+
+    if found {
 		json.NewEncoder(w).Encode(GetIPResponse{IP: ip})
 	} else {
 		json.NewEncoder(w).Encode(ErrorResponse{Errors: errs})
