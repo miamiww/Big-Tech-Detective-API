@@ -4,6 +4,7 @@ import (
   "log"
   "encoding/json"
   "github.com/gorilla/mux"
+  "github.com/gorilla/handlers"
   "github.com/miamiww/cassandraAPI/Cassandra"
   "github.com/miamiww/cassandraAPI/IPs"
 )
@@ -22,7 +23,7 @@ func main() {
   router.HandleFunc("/ips/new/", IPs.Post)
   router.HandleFunc("/ips/", IPs.Get)
   router.HandleFunc("/ips/{ipv4}",IPs.GetOne)
-  log.Fatal(http.ListenAndServe(":8080", router))
+  log.Fatal(http.ListenAndServe(":8080", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}), handlers.AllowedOrigins([]string{"*"}))(router)))
 }
 
 func heartbeat(w http.ResponseWriter, r *http.Request) {
