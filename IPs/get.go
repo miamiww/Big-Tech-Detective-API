@@ -45,7 +45,8 @@ func GetOne(w http.ResponseWriter, r *http.Request) {
 	var ip IP
 	var errs []string
 	var found bool = false
-
+	var err error
+	
 	vars := mux.Vars(r)
 	ip_id := vars["ipv4"]
 	fmt.Println(ip_id)
@@ -67,7 +68,7 @@ func GetOne(w http.ResponseWriter, r *http.Request) {
 			m = map[string]interface{}{}
 		}
 
-		found, err := ranger.Contains(ip_address_checked)
+		found, err = ranger.Contains(ip_address_checked)
 		if err != nil {
 			errs = append(errs, "Trie failure")
 			return
@@ -85,13 +86,12 @@ func GetOne(w http.ResponseWriter, r *http.Request) {
 					IP_Address: ip_id,
 					Company:    network.Getcompany(),
 				}
-				fmt.Printf(network.Getcompany())
-
+				fmt.Println(network.Getcompany())
+				fmt.Println(ip)
 			}
 		}
 
 	}
-
 	if !found {
 		errs = append(errs, "IP not found")
 	}
