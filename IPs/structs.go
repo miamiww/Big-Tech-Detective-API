@@ -10,6 +10,10 @@ type IP struct {
 	IP_Address      string `json:"ipaddress"`
 	Company   string `json:"company"`
 }
+type CIDRS struct{
+	CIDR      string `json:"CIDR"`
+	Company   string `json:"company"`
+}
 
 // GetIPResponse to form payload returning a single IP struct
 type GetIPResponse struct {
@@ -18,7 +22,7 @@ type GetIPResponse struct {
 
 // AllIPsResponse to form payload of an array of IP structs
 type AllIPsResponse struct {
-	IPs []IP `json:"ips"`
+	CIDRs []CIDRS `json:"ips"`
 }
 
 // NewIPResponse builds a payload of new ip resource ID

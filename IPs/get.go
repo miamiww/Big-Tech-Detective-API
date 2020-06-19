@@ -7,7 +7,7 @@ import (
 	// "github.com/gocql/gocql"
 	"encoding/json"
 	"encoding/csv"
-	// "github.com/miamiww/cassandraAPI/Cassandra"
+	"github.com/miamiww/cassandraAPI/Cassandra"
 	"github.com/gorilla/mux"
 	"github.com/miamiww/cidranger"
 )
@@ -18,23 +18,22 @@ import (
 // params:
 // w - response writer for building JSON payload response
 // r - request reader to fetch form data or url params (unused here)
-// func Get(w http.ResponseWriter, r *http.Request) {
-// 	var ipList []IP
-// 	m := map[string]interface{}{}
+func Get(w http.ResponseWriter, r *http.Request) {
+	var ipList []CIDRS
+	m := map[string]interface{}{}
 
-// 	query := "SELECT id,ipv4,company FROM ips"
-// 	iterable := Cassandra.Session.Query(query).Iter()
-// 	for iterable.MapScan(m) {
-// 		ipList = append(ipList, IP{
-// 			ID:        m["id"].(gocql.UUID),
-// 			IPV4:      m["ipv4"].(string),
-// 			Company:   m["company"].(string),
-// 		})
-// 		m = map[string]interface{}{}
-// 	}
+	query := "SELECT Company,CIDR FROM ipblocks"
+	iterable := Cassandra.Session.Query(query).Iter()
+	for iterable.MapScan(m) {
+		ipList = append(ipList, CIDRS{
+			CIDR:      m["CIDR"].(string),
+			Company:   m["Company"].(string),
+		})
+		m = map[string]interface{}{}
+	}
 
-// 	json.NewEncoder(w).Encode(AllIPsResponse{IPs: ipList})
-// }
+	json.NewEncoder(w).Encode(AllIPsResponse{CIDRs: ipList})
+}
 
 // GetOne -- handles GET request to /ips/{ipv4} to fetch one ip
 // params:
