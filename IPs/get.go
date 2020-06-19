@@ -1,7 +1,7 @@
 package IPs
 
 import (
-	"os"
+	// "os"
 	"net"
 	"net/http"
 	// "github.com/gocql/gocql"
@@ -59,11 +59,15 @@ func GetOne(w http.ResponseWriter, r *http.Request) {
 		iterable := Cassandra.Session.Query(query).Iter()
 		for iterable.MapScan(m) {
 			_, network, _ := net.ParseCIDR(m["CIDR"].(string))
-			ranger.Insert(cidranger.NewBasicRangerEntry(*network,m["Company"].(string))
+			ranger.Insert(cidranger.NewBasicRangerEntry(*network,m["Company"].(string)))
 			m = map[string]interface{}{}
 		}
 
-		found, err = ranger.Contains(ip_address_checked)
+		found, err := ranger.Contains(ip_address_checked)
+		if err != nil {
+			errs = append(errs, "Trie failure")
+			return
+		}
 		if found {
 			containingNetworks, err := ranger.ContainingNetworks(ip_address_checked)
 
@@ -134,11 +138,3 @@ func GetOne(w http.ResponseWriter, r *http.Request) {
 //     if err != nil {
 //         return [][]string{}, err
 //     }
-
-<<<<<<< HEAD
-    return lines, nil
-}
-=======
-//     return lines, nil
-// }
->>>>>>> 0236882b2406004e9189e8aeac709d9c87068699
