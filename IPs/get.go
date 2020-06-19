@@ -22,7 +22,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 	var ipList []CIDRS
 	m := map[string]interface{}{}
 
-	query := "SELECT Company,CIDR FROM ipdatabase.ipblocks"
+	query := "SELECT Company,CIDR FROM ipblocks"
 	iterable := Cassandra.Session.Query(query).Iter()
 	for iterable.MapScan(m) {
 		ipList = append(ipList, CIDRS{
