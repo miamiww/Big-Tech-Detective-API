@@ -6,8 +6,8 @@ import (
 
 // IP struct to hold profile data for our ip
 type IP struct {
-	ID        gocql.UUID `json:"id"`
-	IPV4      string `json:"ipv4"`
+	// ID        gocql.UUID `json:"id"`
+	IP_Address      string `json:"ipaddress"`
 	Company   string `json:"company"`
 }
 

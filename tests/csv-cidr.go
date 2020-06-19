@@ -15,47 +15,7 @@ type CsvLine struct {
     Column2 string
 }
 
-type companyRangerEntry interface {
-    Network() net.IPNet
-    Getcompany() string
-}
-
-type RangerEntry interface {
-    Network() net.IPNet
-    Getcompany() string
-}
-
-
-type basicCompanyRangerEntry struct {
-    IpNet net.IPNet
-    Company string
-}
-
-func (b *basicCompanyRangerEntry) Network() net.IPNet{
-    return b.IpNet 
-}
-
-func (b *basicCompanyRangerEntry) Getcompany() string {
-    return b.Company
-}
-
-// NewBasicRangerEntry returns a basic RangerEntry that only stores the network
-// itself.
-func NewCompanyRangerEntry(ipNet net.IPNet, company string) companyRangerEntry {
-	return &basicCompanyRangerEntry{
-        IpNet: ipNet,
-        Company: company,
-	}
-}
-
-type companyRanger interface {
-	Insert(entry companyRangerEntry) error
-	Remove(network net.IPNet) (companyRangerEntry, error)
-	Contains(ip net.IP) (bool, error)
-	ContainingNetworks(ip net.IP) ([]companyRangerEntry, error)
-	CoveredNetworks(network net.IPNet) ([]companyRangerEntry, error)
-	Len() int
-}
+var ip IP
 
 func main() {
 	ranger := cidranger.NewPCTrieRanger()
@@ -74,8 +34,9 @@ func main() {
 		fmt.Println(data.Column1 + " " + data.Column2)
 		_, network, _ := net.ParseCIDR(data.Column2)
         ranger.Insert(cidranger.NewBasicRangerEntry(*network,data.Column1))
-	}
-	containingNetworks, err := ranger.ContainingNetworks(net.ParseIP("107.178.255.0"))
+    }
+    ip_id := "107.178.255.0"
+	containingNetworks, err := ranger.ContainingNetworks(net.ParseIP(ip_id))
     fmt.Printf("%+v\n",containingNetworks)
 
 	if err != nil {
@@ -89,7 +50,14 @@ func main() {
         fmt.Println(string(netjson))
         fmt.Printf("%+v\n",network)
         // fmt.Printf(network.ipNet)
-		fmt.Printf("Containing networks: %s\n", connected.String())
+        fmt.Printf("Containing networks: %s\n", connected.String())
+        fmt.Println(network.Getcompany())
+
+        ip = IP {
+            IP_Address: ip_id,
+            Company:    network.Getcompany(),
+        }
+        fmt.Printf("%+v\n",ip)
 	}
 }
 
