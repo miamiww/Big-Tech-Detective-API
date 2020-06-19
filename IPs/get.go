@@ -73,7 +73,7 @@ func GetOne(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if found {
-			fmt.Printf("found")
+			fmt.Println("found: ")
 			containingNetworks, err := ranger.ContainingNetworks(ip_address_checked)
 
 			if err != nil {
