@@ -6,7 +6,7 @@ import (
 	"net/http"
 	// "github.com/gocql/gocql"
 	"encoding/json"
-	"encoding/csv"
+	// "encoding/csv"
 	"github.com/miamiww/cassandraAPI/Cassandra"
 	"github.com/gorilla/mux"
 	"github.com/miamiww/cidranger"
@@ -50,26 +50,19 @@ func GetOne(w http.ResponseWriter, r *http.Request) {
 	if ip_address_checked == nil{
 		errs = append(errs, "not a valid IP address")
 	} else{
-		type CsvLine struct {
-			Column1 string
-			Column2 string
-		}
+
 		ranger := cidranger.NewPCTrieRanger()
 
-		lines, err := ReadCsv("ip_ranges_asn_only.csv")
-		if err != nil {
-			panic(err)
+		m := map[string]interface{}{}
+
+		query := "SELECT Company,CIDR FROM ipdatabase.ipblocks"
+		iterable := Cassandra.Session.Query(query).Iter()
+		for iterable.MapScan(m) {
+			_, network, _ := net.ParseCIDR(m["CIDR"].(string))
+			ranger.Insert(cidranger.NewBasicRangerEntry(*network,m["Company"].(string))
+			m = map[string]interface{}{}
 		}
 
-		// Loop through lines & turn into object
-		for _, line := range lines {
-			data := CsvLine{
-				Column1: line[0],
-				Column2: line[1],
-			}
-			_, network, _ := net.ParseCIDR(data.Column2)
-			ranger.Insert(cidranger.NewBasicRangerEntry(*network,data.Column1))
-		}
 		found, err = ranger.Contains(ip_address_checked)
 		if found {
 			containingNetworks, err := ranger.ContainingNetworks(ip_address_checked)
@@ -129,20 +122,20 @@ func GetOne(w http.ResponseWriter, r *http.Request) {
 // }
 
 
-func ReadCsv(filename string) ([][]string, error) {
+// func ReadCsv(filename string) ([][]string, error) {
 
-    // Open CSV file
-    f, err := os.Open(filename)
-    if err != nil {
-        return [][]string{}, err
-    }
-    defer f.Close()
+//     // Open CSV file
+//     f, err := os.Open(filename)
+//     if err != nil {
+//         return [][]string{}, err
+//     }
+//     defer f.Close()
 
-    // Read File into a Variable
-    lines, err := csv.NewReader(f).ReadAll()
-    if err != nil {
-        return [][]string{}, err
-    }
+//     // Read File into a Variable
+//     lines, err := csv.NewReader(f).ReadAll()
+//     if err != nil {
+//         return [][]string{}, err
+//     }
 
-    return lines, nil
-}
+//     return lines, nil
+// }
