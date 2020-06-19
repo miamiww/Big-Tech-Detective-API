@@ -27,8 +27,8 @@ func Get(w http.ResponseWriter, r *http.Request) {
 	iterable := Cassandra.Session.Query(query).Iter()
 	for iterable.MapScan(m) {
 		ipList = append(ipList, CIDRS{
-			CIDR:      m["CIDR"].(string),
-			Company:   m["Company"].(string),
+			CIDR:      m["cidr"].(string),
+			Company:   m["company"].(string),
 		})
 		m = map[string]interface{}{}
 	}
@@ -48,6 +48,7 @@ func GetOne(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	ip_id := vars["ipv4"]
+	fmt.Println(ip_id)
 	ip_address_checked := net.ParseIP(ip_id)
 	if ip_address_checked == nil{
 		errs = append(errs, "not a valid IP address")
@@ -63,9 +64,9 @@ func GetOne(w http.ResponseWriter, r *http.Request) {
 		for iterable.MapScan(m) {
 			fmt.Println("adding to ranger")
 
-			_, network, _ := net.ParseCIDR(m["CIDR"].(string))
+			_, network, _ := net.ParseCIDR(m["cidr"].(string))
 			fmt.Printf("%+v\n",network)
-			ranger.Insert(cidranger.NewBasicRangerEntry(*network,m["Company"].(string)))
+			ranger.Insert(cidranger.NewBasicRangerEntry(*network,m["company"].(string)))
 			m = map[string]interface{}{}
 		}
 
