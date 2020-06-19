@@ -5,6 +5,7 @@ import (
 	"net"
 	"net/http"
 	// "github.com/gocql/gocql"
+	"fmt"
 	"encoding/json"
 	// "encoding/csv"
 	"github.com/miamiww/cassandraAPI/Cassandra"
@@ -40,6 +41,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 // w - response writer for building JSON payload response
 // r - request reader to fetch form data or url params
 func GetOne(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("getting one")
 	var ip IP
 	var errs []string
 	var found bool = false
@@ -50,6 +52,7 @@ func GetOne(w http.ResponseWriter, r *http.Request) {
 	if ip_address_checked == nil{
 		errs = append(errs, "not a valid IP address")
 	} else{
+		fmt.Println("making query to database to build trie")
 
 		ranger := cidranger.NewPCTrieRanger()
 
@@ -58,6 +61,8 @@ func GetOne(w http.ResponseWriter, r *http.Request) {
 		query := "SELECT Company,CIDR FROM ipdatabase.ipblocks"
 		iterable := Cassandra.Session.Query(query).Iter()
 		for iterable.MapScan(m) {
+			fmt.Println("adding to ranger")
+
 			_, network, _ := net.ParseCIDR(m["CIDR"].(string))
 			ranger.Insert(cidranger.NewBasicRangerEntry(*network,m["Company"].(string)))
 			m = map[string]interface{}{}
