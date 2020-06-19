@@ -53,7 +53,6 @@ func GetOne(w http.ResponseWriter, r *http.Request) {
 	if ip_address_checked == nil{
 		errs = append(errs, "not a valid IP address")
 	} else{
-		fmt.Println("making query to database to build trie")
 
 		ranger := cidranger.NewPCTrieRanger()
 
@@ -62,10 +61,8 @@ func GetOne(w http.ResponseWriter, r *http.Request) {
 		query := "SELECT Company,CIDR FROM ipdatabase.ipblocks"
 		iterable := Cassandra.Session.Query(query).Iter()
 		for iterable.MapScan(m) {
-			fmt.Println("adding to ranger")
 
 			_, network, _ := net.ParseCIDR(m["cidr"].(string))
-			fmt.Printf("%+v\n",network)
 			ranger.Insert(cidranger.NewBasicRangerEntry(*network,m["company"].(string)))
 			m = map[string]interface{}{}
 		}
@@ -87,6 +84,8 @@ func GetOne(w http.ResponseWriter, r *http.Request) {
 					IP_Address: ip_id,
 					Company:    network.Getcompany(),
 				}
+				fmt.Printf(network.Getcompany())
+
 			}
 		}
 
