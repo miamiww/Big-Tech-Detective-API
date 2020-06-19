@@ -64,6 +64,7 @@ func GetOne(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("adding to ranger")
 
 			_, network, _ := net.ParseCIDR(m["CIDR"].(string))
+			fmt.Printf("%+v\n",network)
 			ranger.Insert(cidranger.NewBasicRangerEntry(*network,m["Company"].(string)))
 			m = map[string]interface{}{}
 		}
