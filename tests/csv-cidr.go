@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net"
     "os"
-	"github.com/yl2chen/cidranger"
+	"github.com/miamiww/cidranger"
 )
 
 
@@ -73,7 +73,7 @@ func main() {
         }
 		fmt.Println(data.Column1 + " " + data.Column2)
 		_, network, _ := net.ParseCIDR(data.Column2)
-		ranger.Insert(NewCompanyRangerEntry(*network,data.Column1))
+        ranger.Insert(cidranger.NewBasicRangerEntry(*network,data.Column1))
 	}
 	containingNetworks, err := ranger.ContainingNetworks(net.ParseIP("107.178.255.0"))
     fmt.Printf("%+v\n",containingNetworks)
