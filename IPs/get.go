@@ -10,7 +10,7 @@ import (
 	// "encoding/csv"
 	"github.com/miamiww/cassandraAPI/Cassandra"
 	"github.com/gorilla/mux"
-	"github.com/miamiww/cidranger"
+	// "github.com/miamiww/cidranger"
 	"github.com/miamiww/cassandraAPI/Data"
 
 )
