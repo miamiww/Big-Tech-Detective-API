@@ -11,6 +11,8 @@ import (
 	"github.com/miamiww/cassandraAPI/Cassandra"
 	"github.com/gorilla/mux"
 	"github.com/miamiww/cidranger"
+	"github.com/miamiww/cassandraAPI/Data"
+
 )
 
 
@@ -55,18 +57,7 @@ func GetOne(w http.ResponseWriter, r *http.Request) {
 		errs = append(errs, "not a valid IP address")
 	} else{
 
-		ranger := cidranger.NewPCTrieRanger()
-
-		m := map[string]interface{}{}
-
-		query := "SELECT Company,CIDR FROM ipdatabase.ipblocks"
-		iterable := Cassandra.Session.Query(query).Iter()
-		for iterable.MapScan(m) {
-
-			_, network, _ := net.ParseCIDR(m["cidr"].(string))
-			ranger.Insert(cidranger.NewBasicRangerEntry(*network,m["company"].(string)))
-			m = map[string]interface{}{}
-		}
+		ranger := Data.Ranger
 
 		found, err = ranger.Contains(ip_address_checked)
 		if err != nil {

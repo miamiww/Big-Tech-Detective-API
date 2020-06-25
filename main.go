@@ -7,6 +7,7 @@ import (
   "github.com/gorilla/handlers"
   "github.com/miamiww/cassandraAPI/Cassandra"
   "github.com/miamiww/cassandraAPI/IPs"
+  "github.com/miamiww/cassandraAPI/Data"
 )
 
 type heartbeatResponse struct {
@@ -17,6 +18,7 @@ type heartbeatResponse struct {
 func main() {
   CassandraSession := Cassandra.Session
   defer CassandraSession.Close()
+  CIDRanger := Data.Ranger
 
   router := mux.NewRouter().StrictSlash(true)
   router.HandleFunc("/", heartbeat)
