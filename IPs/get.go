@@ -1,34 +1,39 @@
 package IPs
 
 import (
+	// "os"
 	"net"
 	"net/http"
-	"github.com/gocql/gocql"
+	// "github.com/gocql/gocql"
+	"fmt"
 	"encoding/json"
+	// "encoding/csv"
 	"github.com/miamiww/cassandraAPI/Cassandra"
 	"github.com/gorilla/mux"
+	"github.com/miamiww/cidranger"
 )
+
+
 
 // Get -- handles GET request to /ips/ to fetch all ips
 // params:
 // w - response writer for building JSON payload response
 // r - request reader to fetch form data or url params (unused here)
 func Get(w http.ResponseWriter, r *http.Request) {
-	var ipList []IP
+	var ipList []CIDRS
 	m := map[string]interface{}{}
 
-	query := "SELECT id,ipv4,company FROM ips"
+	query := "SELECT Company,CIDR FROM ipblocks"
 	iterable := Cassandra.Session.Query(query).Iter()
 	for iterable.MapScan(m) {
-		ipList = append(ipList, IP{
-			ID:        m["id"].(gocql.UUID),
-			IPV4:      m["ipv4"].(string),
+		ipList = append(ipList, CIDRS{
+			CIDR:      m["cidr"].(string),
 			Company:   m["company"].(string),
 		})
 		m = map[string]interface{}{}
 	}
 
-	json.NewEncoder(w).Encode(AllIPsResponse{IPs: ipList})
+	json.NewEncoder(w).Encode(AllIPsResponse{CIDRs: ipList})
 }
 
 // GetOne -- handles GET request to /ips/{ipv4} to fetch one ip
@@ -36,29 +41,57 @@ func Get(w http.ResponseWriter, r *http.Request) {
 // w - response writer for building JSON payload response
 // r - request reader to fetch form data or url params
 func GetOne(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("getting one")
 	var ip IP
 	var errs []string
 	var found bool = false
-
+	var err error
+	
 	vars := mux.Vars(r)
 	ip_id := vars["ipv4"]
+	fmt.Println(ip_id)
 	ip_address_checked := net.ParseIP(ip_id)
 	if ip_address_checked == nil{
 		errs = append(errs, "not a valid IP address")
 	} else{
+
+		ranger := cidranger.NewPCTrieRanger()
+
 		m := map[string]interface{}{}
-		query := "SELECT id,ipv4,company FROM ipdatabase.ips WHERE ipv4=? LIMIT 1 ALLOW FILTERING"
-		iterable := Cassandra.Session.Query(query, ip_id).Consistency(gocql.One).Iter()
+
+		query := "SELECT Company,CIDR FROM ipdatabase.ipblocks"
+		iterable := Cassandra.Session.Query(query).Iter()
 		for iterable.MapScan(m) {
-			found = true
-			ip = IP{
-				ID:        m["id"].(gocql.UUID),
-				IPV4:      m["ipv4"].(string),
-				Company:   m["company"].(string),
+
+			_, network, _ := net.ParseCIDR(m["cidr"].(string))
+			ranger.Insert(cidranger.NewBasicRangerEntry(*network,m["company"].(string)))
+			m = map[string]interface{}{}
+		}
+
+		found, err = ranger.Contains(ip_address_checked)
+		if err != nil {
+			errs = append(errs, "Trie failure")
+			return
+		}
+		if found {
+			fmt.Println("found: ")
+			containingNetworks, err := ranger.ContainingNetworks(ip_address_checked)
+
+			if err != nil {
+				errs = append(errs, "Trie failure")
+				return
+			}
+			for _, network := range containingNetworks {
+				ip = IP {
+					IP_Address: ip_id,
+					Company:    network.Getcompany(),
+				}
+				fmt.Println(network.Getcompany())
+				fmt.Println(ip)
 			}
 		}
-	}
 
+	}
 	if !found {
 		errs = append(errs, "IP not found")
 	}
@@ -96,3 +129,19 @@ func GetOne(w http.ResponseWriter, r *http.Request) {
 // 	}
 // 	return map[string]string{}
 // }
+
+
+// func ReadCsv(filename string) ([][]string, error) {
+
+//     // Open CSV file
+//     f, err := os.Open(filename)
+//     if err != nil {
+//         return [][]string{}, err
+//     }
+//     defer f.Close()
+
+//     // Read File into a Variable
+//     lines, err := csv.NewReader(f).ReadAll()
+//     if err != nil {
+//         return [][]string{}, err
+//     }

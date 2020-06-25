@@ -15,7 +15,7 @@ func FormToIP(r *http.Request) (IP, []string) {
 	var errStr string
 	var errs []string
 	
-	ip.IPV4, errStr = processFormField(r, "ipv4")
+	ip.IP_Address, errStr = processFormField(r, "ipaddress")
 	errs = appendError(errs, errStr)
 	ip.Company, errStr = processFormField(r, "company")
 	errs = appendError(errs, errStr)
