@@ -2,6 +2,7 @@ package main
 import (
   "net/http"
   "log"
+  "fmt"
   "encoding/json"
   "github.com/gorilla/mux"
   "github.com/gorilla/handlers"
@@ -17,8 +18,10 @@ type heartbeatResponse struct {
 
 func main() {
   CassandraSession := Cassandra.Session
+
   defer CassandraSession.Close()
-  CIDRanger := Data.Ranger
+  CIDRanger := Data.BlockRanger
+  fmt.Println(CIDRanger)
 
   router := mux.NewRouter().StrictSlash(true)
   router.HandleFunc("/", heartbeat)

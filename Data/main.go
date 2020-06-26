@@ -7,9 +7,9 @@ import (
   "fmt"
 )
 
-var Ranger *cidranger.Ranger //making Ranger accessible outside of the package
+var BlockRanger cidranger.Ranger //making Ranger accessible outside of the package
 func init() {
-  Ranger := cidranger.NewPCTrieRanger()
+  BlockRanger = cidranger.NewPCTrieRanger()
 
   m := map[string]interface{}{}
 
@@ -18,7 +18,7 @@ func init() {
   for iterable.MapScan(m) {
 
 	  _, network, _ := net.ParseCIDR(m["cidr"].(string))
-	  Ranger.Insert(cidranger.NewBasicRangerEntry(*network,m["company"].(string)))
+	  BlockRanger.Insert(cidranger.NewBasicRangerEntry(*network,m["company"].(string)))
 	  m = map[string]interface{}{}
   }
   fmt.Println("data trie init done")

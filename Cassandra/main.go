@@ -13,5 +13,6 @@ func init() {
   if err != nil {
     panic(err)
   }
+
   fmt.Println("cassandra init done")
 }

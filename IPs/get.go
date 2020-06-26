@@ -22,6 +22,8 @@ import (
 // w - response writer for building JSON payload response
 // r - request reader to fetch form data or url params (unused here)
 func Get(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("getting all")
+
 	var ipList []CIDRS
 	m := map[string]interface{}{}
 
@@ -57,7 +59,7 @@ func GetOne(w http.ResponseWriter, r *http.Request) {
 		errs = append(errs, "not a valid IP address")
 	} else{
 
-		ranger := Data.Ranger
+		ranger := Data.BlockRanger
 
 		found, err = ranger.Contains(ip_address_checked)
 		if err != nil {
@@ -65,7 +67,6 @@ func GetOne(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if found {
-			fmt.Println("found: ")
 			containingNetworks, err := ranger.ContainingNetworks(ip_address_checked)
 
 			if err != nil {
@@ -77,8 +78,7 @@ func GetOne(w http.ResponseWriter, r *http.Request) {
 					IP_Address: ip_id,
 					Company:    network.Getcompany(),
 				}
-				fmt.Println(network.Getcompany())
-				fmt.Println(ip)
+
 			}
 		}
 
