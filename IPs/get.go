@@ -10,7 +10,9 @@ import (
 	// "encoding/csv"
 	"github.com/miamiww/cassandraAPI/Cassandra"
 	"github.com/gorilla/mux"
-	"github.com/miamiww/cidranger"
+	// "github.com/miamiww/cidranger"
+	"github.com/miamiww/cassandraAPI/Data"
+
 )
 
 
@@ -20,6 +22,8 @@ import (
 // w - response writer for building JSON payload response
 // r - request reader to fetch form data or url params (unused here)
 func Get(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("getting all")
+
 	var ipList []CIDRS
 	m := map[string]interface{}{}
 
@@ -55,18 +59,7 @@ func GetOne(w http.ResponseWriter, r *http.Request) {
 		errs = append(errs, "not a valid IP address")
 	} else{
 
-		ranger := cidranger.NewPCTrieRanger()
-
-		m := map[string]interface{}{}
-
-		query := "SELECT Company,CIDR FROM ipdatabase.ipblocks"
-		iterable := Cassandra.Session.Query(query).Iter()
-		for iterable.MapScan(m) {
-
-			_, network, _ := net.ParseCIDR(m["cidr"].(string))
-			ranger.Insert(cidranger.NewBasicRangerEntry(*network,m["company"].(string)))
-			m = map[string]interface{}{}
-		}
+		ranger := Data.BlockRanger
 
 		found, err = ranger.Contains(ip_address_checked)
 		if err != nil {
@@ -74,7 +67,6 @@ func GetOne(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if found {
-			fmt.Println("found: ")
 			containingNetworks, err := ranger.ContainingNetworks(ip_address_checked)
 
 			if err != nil {
@@ -86,8 +78,7 @@ func GetOne(w http.ResponseWriter, r *http.Request) {
 					IP_Address: ip_id,
 					Company:    network.Getcompany(),
 				}
-				fmt.Println(network.Getcompany())
-				fmt.Println(ip)
+
 			}
 		}
 

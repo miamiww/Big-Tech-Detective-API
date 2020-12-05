@@ -2,11 +2,13 @@ package main
 import (
   "net/http"
   "log"
+  "fmt"
   "encoding/json"
   "github.com/gorilla/mux"
   "github.com/gorilla/handlers"
   "github.com/miamiww/cassandraAPI/Cassandra"
   "github.com/miamiww/cassandraAPI/IPs"
+  "github.com/miamiww/cassandraAPI/Data"
 )
 
 type heartbeatResponse struct {
@@ -16,7 +18,10 @@ type heartbeatResponse struct {
 
 func main() {
   CassandraSession := Cassandra.Session
+
   defer CassandraSession.Close()
+  CIDRanger := Data.BlockRanger
+  fmt.Println(CIDRanger)
 
   router := mux.NewRouter().StrictSlash(true)
   router.HandleFunc("/", heartbeat)
