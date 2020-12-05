@@ -1,17 +1,13 @@
 package IPs
 
 import (
-	// "os"
 	"net"
 	"net/http"
-	// "github.com/gocql/gocql"
 	"fmt"
 	"encoding/json"
-	// "encoding/csv"
-	"github.com/miamiww/cassandraAPI/Cassandra"
+	"github.com/miamiww/Blocker-API/Cassandra"
 	"github.com/gorilla/mux"
-	// "github.com/miamiww/cidranger"
-	"github.com/miamiww/cassandraAPI/Data"
+	"github.com/miamiww/Blocker-API/Data"
 
 )
 

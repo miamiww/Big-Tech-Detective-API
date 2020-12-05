@@ -5,7 +5,6 @@ import (
 	"net"
     "encoding/csv"
     "os"
-	"github.com/yl2chen/cidranger"
 )
 
 func main() {
