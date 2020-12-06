@@ -4,7 +4,7 @@ package IPs
 // 	"net/http"
 // 	"github.com/gocql/gocql"
 // 	"encoding/json"
-// 	"github.com/miamiww/cassandraAPI/Cassandra"
+// 	"github.com/miamiww/Blocker-API/Cassandra"
 // 	"fmt"
 // )
 

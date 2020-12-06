@@ -6,9 +6,9 @@ import (
   "encoding/json"
   "github.com/gorilla/mux"
   "github.com/gorilla/handlers"
-  "github.com/miamiww/cassandraAPI/Cassandra"
-  "github.com/miamiww/cassandraAPI/IPs"
-  "github.com/miamiww/cassandraAPI/Data"
+  "github.com/miamiww/Blocker-API/Cassandra"
+  "github.com/miamiww/Blocker-API/IPs"
+  "github.com/miamiww/Blocker-API/Data"
 )
 
 type heartbeatResponse struct {

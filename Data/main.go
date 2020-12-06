@@ -3,7 +3,7 @@ import (
 	
   "net"
   "github.com/miamiww/cidranger"
-  "github.com/miamiww/cassandraAPI/Cassandra"  
+  "github.com/miamiww/Blocker-API/Cassandra"  
   "fmt"
 )
 
