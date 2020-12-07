@@ -1,5 +1,6 @@
 module github.com/miamiww/Blocker-API
 
+// +heroku goVersion go1.15
 go 1.15
 
 require (
