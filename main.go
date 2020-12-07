@@ -6,7 +6,6 @@ import (
   "encoding/json"
   "github.com/gorilla/mux"
   "github.com/gorilla/handlers"
-  // "github.com/miamiww/Blocker-API/Postgres"
   "github.com/miamiww/Blocker-API/IPs"
   "github.com/miamiww/Blocker-API/Data"
 )
@@ -17,10 +16,9 @@ type heartbeatResponse struct {
 }
 
 func main() {
-  // CIDR_connection := Postgres.Conn
 
   CIDRanger := Data.BlockRanger
-  fmt.Println(CIDRanger)
+  // fmt.Println(CIDRanger)
 
   router := mux.NewRouter().StrictSlash(true)
   router.HandleFunc("/", heartbeat)
