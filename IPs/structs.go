@@ -1,8 +1,8 @@
 package IPs
 
-import (
-	"github.com/gocql/gocql"
-)
+// import (
+// 	"github.com/gocql/gocql"
+// )
 
 // IP struct to hold profile data for our ip
 type IP struct {
@@ -26,9 +26,9 @@ type AllIPsResponse struct {
 }
 
 // NewIPResponse builds a payload of new ip resource ID
-type NewIPResponse struct {
-	ID gocql.UUID `json:"id"`
-}
+// type NewIPResponse struct {
+// 	ID gocql.UUID `json:"id"`
+// }
 
 // ErrorResponse returns an array of error strings if appropriate
 type ErrorResponse struct {

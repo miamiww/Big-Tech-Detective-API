@@ -5,10 +5,11 @@ import (
 	"net/http"
 	"fmt"
 	"encoding/json"
-	"github.com/miamiww/Blocker-API/Cassandra"
 	"github.com/gorilla/mux"
 	"github.com/miamiww/Blocker-API/Data"
-
+	"github.com/jackc/pgx/v4"
+	"context"
+	"os"
 )
 
 
@@ -21,16 +22,36 @@ func Get(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("getting all")
 
 	var ipList []CIDRS
-	m := map[string]interface{}{}
 
-	query := "SELECT Company,CIDR FROM ipblocks"
-	iterable := Cassandra.Session.Query(query).Iter()
-	for iterable.MapScan(m) {
-		ipList = append(ipList, CIDRS{
-			CIDR:      m["cidr"].(string),
-			Company:   m["company"].(string),
-		})
-		m = map[string]interface{}{}
+	var err error
+	conn, err := pgx.Connect(context.Background(), os.Getenv("DATABASE_URL"))
+  
+	if err != nil {
+		fmt.Println("failed to connect database")
+	}
+	defer conn.Close(context.Background())
+
+	iterable, err := conn.Query(context.Background(),"SELECT Company, CIDR FROM test;")
+
+	if err != nil {
+		  fmt.Println(err)
+	}
+	
+	// loops through all rows using Next() method, which closes out connection automatically
+	for iterable.Next() {
+	  var (
+		  company string
+		  cidr string
+		)
+	  if err := iterable.Scan(&company, &cidr); err != nil {
+			  // Check for a scan error.
+			  // Query rows will be closed with defer.
+			  fmt.Println(err)
+	  }
+	  ipList = append(ipList, CIDRS{
+				CIDR:      cidr,
+				Company:   company,
+			})
 	}
 
 	json.NewEncoder(w).Encode(AllIPsResponse{CIDRs: ipList})
@@ -54,7 +75,7 @@ func GetOne(w http.ResponseWriter, r *http.Request) {
 	if ip_address_checked == nil{
 		errs = append(errs, "not a valid IP address")
 	} else{
-
+		// fetches the trie ranger of cidr blocks from Data module and checks to see if the requested IP is within it
 		ranger := Data.BlockRanger
 
 		found, err = ranger.Contains(ip_address_checked)
@@ -90,45 +111,3 @@ func GetOne(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(ErrorResponse{Errors: errs})
 	}
 }
-
-// Enrich -- turns an array of ip UUIDs into a map of {uuid: "firstname lastname"}
-// params:
-// uuids - array of ip UUIDs to fetch
-// returns:
-// a map[string]string of {uuid: "firstname lastname"}
-// func Enrich(uuids []gocql.UUID) map[string]string {
-// 	if len(uuids) > 0 {
-// 		fmt.Println("---\nfetching names", uuids)
-// 		names := map[string]string{}
-// 		m := map[string]interface{}{}
-
-// 		query := "SELECT id,firstname,lastname FROM ips WHERE id IN ?"
-// 		iterable := Cassandra.Session.Query(query, uuids).Iter()
-// 		for iterable.MapScan(m) {
-// 			fmt.Println("m", m)
-// 			ipID := m["id"].(gocql.UUID)
-// 			fmt.Println("ipID", ipID.String())
-// 			names[ipID.String()] = fmt.Sprintf("%s %s", m["firstname"].(string), m["lastname"].(string))
-// 			m = map[string]interface{}{}
-// 		}
-// 		fmt.Println("names", names)
-// 		return names
-// 	}
-// 	return map[string]string{}
-// }
-
-
-// func ReadCsv(filename string) ([][]string, error) {
-
-//     // Open CSV file
-//     f, err := os.Open(filename)
-//     if err != nil {
-//         return [][]string{}, err
-//     }
-//     defer f.Close()
-
-//     // Read File into a Variable
-//     lines, err := csv.NewReader(f).ReadAll()
-//     if err != nil {
-//         return [][]string{}, err
-//     }
