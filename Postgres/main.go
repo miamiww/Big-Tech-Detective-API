@@ -22,7 +22,6 @@ func init() {
 //   CIDR_db, err = gorm.Open( "postgres", "host=db port=5432 user=alden dbname=cidr_blocks sslmode=disable password=")
 
   if err != nil {
-
     panic("failed to connect database")
   }
   defer Conn.Close(context.Background())
