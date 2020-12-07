@@ -8,6 +8,8 @@ import (
   "github.com/gorilla/mux"
   "github.com/gorilla/handlers"
   "github.com/miamiww/Blocker-API/IPs"
+  "github.com/miamiww/Blocker-API/Data"
+
 )
 
 type heartbeatResponse struct {
@@ -21,6 +23,9 @@ func main() {
   if err != nil {
     log.Fatal(err)
   }
+
+  CIDRs := Data.BlockRanger
+  fmt.Println(CIDRs)
 
   router := mux.NewRouter().StrictSlash(true)
   router.HandleFunc("/", heartbeat)
