@@ -1,6 +1,7 @@
 package main
 import (
   "net/http"
+  "os"
   "log"
   "fmt"
   "encoding/json"
@@ -16,13 +17,20 @@ type heartbeatResponse struct {
 
 func main() {
 
+  port := os.Getenv("PORT")
+  if port == "" {
+    return "", fmt.Errorf("$PORT not set")
+  }
+  return ":" + port, nil
+  }
+
   router := mux.NewRouter().StrictSlash(true)
   router.HandleFunc("/", heartbeat)
   // router.HandleFunc("/ips/new/", IPs.Post)
   router.HandleFunc("/ips/", IPs.Get)
   router.HandleFunc("/ips/{ipv4}",IPs.GetOne)
   fmt.Println("server started")
-  log.Fatal(http.ListenAndServe(":80",handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}), handlers.AllowedOrigins([]string{"*"}))(router)))
+  log.Fatal(http.ListenAndServe(port,handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}), handlers.AllowedOrigins([]string{"*"}))(router)))
 
 }
 
