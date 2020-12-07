@@ -70,7 +70,6 @@ func GetOne(w http.ResponseWriter, r *http.Request) {
 	
 	vars := mux.Vars(r)
 	ip_id := vars["ipv4"]
-	fmt.Println(ip_id)
 	ip_address_checked := net.ParseIP(ip_id)
 	if ip_address_checked == nil{
 		errs = append(errs, "not a valid IP address")
