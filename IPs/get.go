@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"fmt"
 	"encoding/json"
-	"github.com/miamiww/Blocker-API/Cassandra"
+	// "github.com/miamiww/Blocker-API/Postgres"
 	"github.com/gorilla/mux"
 	"github.com/miamiww/Blocker-API/Data"
 
@@ -20,20 +20,20 @@ import (
 func Get(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("getting all")
 
-	var ipList []CIDRS
-	m := map[string]interface{}{}
+	// var ipList []CIDRS
+	// m := map[string]interface{}{}
 
-	query := "SELECT Company,CIDR FROM ipblocks"
-	iterable := Cassandra.Session.Query(query).Iter()
-	for iterable.MapScan(m) {
-		ipList = append(ipList, CIDRS{
-			CIDR:      m["cidr"].(string),
-			Company:   m["company"].(string),
-		})
-		m = map[string]interface{}{}
-	}
+	// query := "SELECT Company,CIDR FROM test;"
+	// iterable := Postgres.CIDR_db.Query(query).Iter()
+	// for iterable.MapScan(m) {
+	// 	ipList = append(ipList, CIDRS{
+	// 		CIDR:      m["cidr"].(string),
+	// 		Company:   m["company"].(string),
+	// 	})
+	// 	m = map[string]interface{}{}
+	// }
 
-	json.NewEncoder(w).Encode(AllIPsResponse{CIDRs: ipList})
+	// json.NewEncoder(w).Encode(AllIPsResponse{CIDRs: ipList})
 }
 
 // GetOne -- handles GET request to /ips/{ipv4} to fetch one ip

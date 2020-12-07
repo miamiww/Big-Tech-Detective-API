@@ -6,7 +6,7 @@ import (
   "encoding/json"
   "github.com/gorilla/mux"
   "github.com/gorilla/handlers"
-  "github.com/miamiww/Blocker-API/Cassandra"
+  // "github.com/miamiww/Blocker-API/Postgres"
   "github.com/miamiww/Blocker-API/IPs"
   "github.com/miamiww/Blocker-API/Data"
 )
@@ -17,9 +17,8 @@ type heartbeatResponse struct {
 }
 
 func main() {
-  CassandraSession := Cassandra.Session
+  // CIDR_connection := Postgres.Conn
 
-  defer CassandraSession.Close()
   CIDRanger := Data.BlockRanger
   fmt.Println(CIDRanger)
 
@@ -28,7 +27,7 @@ func main() {
   // router.HandleFunc("/ips/new/", IPs.Post)
   router.HandleFunc("/ips/", IPs.Get)
   router.HandleFunc("/ips/{ipv4}",IPs.GetOne)
-  log.Fatal(http.ListenAndServeTLS(":8080", "/etc/letsencrypt/live/thegreatest.website/fullchain.pem","/etc/letsencrypt/live/thegreatest.website/privkey.pem",handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}), handlers.AllowedOrigins([]string{"*"}))(router)))
+  log.Fatal(http.ListenAndServe(":8080",handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}), handlers.AllowedOrigins([]string{"*"}))(router)))
 }
 
 func heartbeat(w http.ResponseWriter, r *http.Request) {
