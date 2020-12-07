@@ -17,11 +17,9 @@ type heartbeatResponse struct {
 
 func main() {
 
-  port := os.Getenv("PORT")
-  if port == "" {
-    return "", fmt.Errorf("$PORT not set")
-  }
-  return ":" + port, nil
+  addr, err := determineListenAddress()
+  if err != nil {
+    log.Fatal(err)
   }
 
   router := mux.NewRouter().StrictSlash(true)
@@ -30,10 +28,19 @@ func main() {
   router.HandleFunc("/ips/", IPs.Get)
   router.HandleFunc("/ips/{ipv4}",IPs.GetOne)
   fmt.Println("server started")
-  log.Fatal(http.ListenAndServe(port,handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}), handlers.AllowedOrigins([]string{"*"}))(router)))
+  log.Fatal(http.ListenAndServe(addr,handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}), handlers.AllowedOrigins([]string{"*"}))(router)))
 
 }
 
 func heartbeat(w http.ResponseWriter, r *http.Request) {
   json.NewEncoder(w).Encode(heartbeatResponse{Status: "OK", Code: 200})
+}
+
+// for Heroku
+func determineListenAddress() (string, error) {
+  port := os.Getenv("PORT")
+  if port == "" {
+    return "", fmt.Errorf("$PORT not set")
+  }
+  return ":" + port, nil
 }
