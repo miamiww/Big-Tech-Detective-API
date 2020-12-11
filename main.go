@@ -30,6 +30,7 @@ func main() {
   router := mux.NewRouter().StrictSlash(true)
   router.HandleFunc("/", heartbeat)
   // router.HandleFunc("/ips/new/", IPs.Post)
+  router.HandleFunc("/ip/", IPs.Post)
   router.HandleFunc("/ips/", IPs.Get)
   router.HandleFunc("/ips/{ipv4}",IPs.GetOne)
   fmt.Println("server started")

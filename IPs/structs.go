@@ -25,7 +25,7 @@ type AllIPsResponse struct {
 	CIDRs []CIDRS `json:"ips"`
 }
 
-// NewIPResponse builds a payload of new ip resource ID
+// NewIPResponse builds a payload of new ip resource ID (this would be if we were still using post method)
 // type NewIPResponse struct {
 // 	ID gocql.UUID `json:"id"`
 // }
@@ -33,4 +33,8 @@ type AllIPsResponse struct {
 // ErrorResponse returns an array of error strings if appropriate
 type ErrorResponse struct {
 	Errors []string `json:"errors"`
+}
+
+type PostIPRecieve struct {
+	IP string
 }
