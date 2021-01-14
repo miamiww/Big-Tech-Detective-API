@@ -48,8 +48,8 @@ func heartbeat(w http.ResponseWriter, r *http.Request) {
   json.NewEncoder(w).Encode(heartbeatResponse{Status: "OK", Code: 200})
 }
 
-func message(w http.ResponseWriter, r *htp.Request){
-  jsoon.NewEncoder(w).Encode(messageResponse{Update:false, Message:""})
+func message(w http.ResponseWriter, r *http.Request){
+  json.NewEncoder(w).Encode(messageResponse{Update:false, Message:""})
 }
 
 // for Heroku
