@@ -17,6 +17,11 @@ type heartbeatResponse struct {
   Code int `json:"code"`
 }
 
+type messageResponse struct{
+  Update bool `json:"update"`
+  Message string `json:"message"`
+}
+
 func main() {
 
   addr, err := determineListenAddress()
@@ -44,7 +49,7 @@ func heartbeat(w http.ResponseWriter, r *http.Request) {
 }
 
 func message(w http.ResponseWriter, r *htp.Request){
-  jsoon.NewEncoder(w).Encode(heartbeatResponse{update:false, message:""})
+  jsoon.NewEncoder(w).Encode(messageResponse{Update:false, Message:""})
 }
 
 // for Heroku
