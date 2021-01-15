@@ -17,8 +17,11 @@ type heartbeatResponse struct {
   Code int `json:"code"`
 }
 
+type updateResponse struct{
+  Version string `json:"version"`
+}
+
 type messageResponse struct{
-  Update bool `json:"update"`
   Message string `json:"message"`
 }
 
@@ -38,6 +41,7 @@ func main() {
   router.HandleFunc("/ip/", IPs.Post)
   router.HandleFunc("/ips/", IPs.Get)
   router.HandleFunc("/ips/{ipv4}",IPs.GetOne)
+  router.HandleFunc("/update/",update)
   router.HandleFunc("/message/",message)
   fmt.Println("server started")
   log.Fatal(http.ListenAndServe(addr,handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}), handlers.AllowedOrigins([]string{"*"}))(router)))
@@ -48,9 +52,14 @@ func heartbeat(w http.ResponseWriter, r *http.Request) {
   json.NewEncoder(w).Encode(heartbeatResponse{Status: "OK", Code: 200})
 }
 
-func message(w http.ResponseWriter, r *http.Request){
-  json.NewEncoder(w).Encode(messageResponse{Update:false, Message:""})
+func update(w http.ResponseWriter, r *http.Request){
+  json.NewEncoder(w).Encode(updateResponse{Version:"0.9.1"})
 }
+
+func message(w http.ResponseWriter, r *http.Request){
+  json.NewEncoder(w).Encode(messageResponse{Message:""})
+}
+
 
 // for Heroku
 func determineListenAddress() (string, error) {
