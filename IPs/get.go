@@ -32,7 +32,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close(context.Background())
 
-	iterable, err := conn.Query(context.Background(),"SELECT Company, CIDR FROM test;")
+	iterable, err := conn.Query(context.Background(),"SELECT Company, CIDR FROM cidrs;")
 
 	if err != nil {
 		  fmt.Println(err)

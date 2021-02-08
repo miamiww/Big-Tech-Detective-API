@@ -29,7 +29,7 @@ func init() {
 
   // this is taking the whole table of cidr blocks from the database 
   // iterable is all the rows that need to be iterated through
-  iterable, err := conn.Query(context.Background(),"SELECT Company, CIDR FROM test;")
+  iterable, err := conn.Query(context.Background(),"SELECT Company, CIDR FROM cidrs;")
 
   if err != nil {
 		fmt.Println(err)
