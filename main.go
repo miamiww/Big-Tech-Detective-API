@@ -15,6 +15,7 @@ import (
 type heartbeatResponse struct {
   Status string `json:"status"`
   Code int `json:"code"`
+  Message string `json:"message"`
 }
 
 type updateResponse struct{
@@ -23,6 +24,7 @@ type updateResponse struct{
 
 type messageResponse struct{
   Message string `json:"message"`
+  Status bool `json:"status"`
 }
 
 func main() {
@@ -49,7 +51,7 @@ func main() {
 }
 
 func heartbeat(w http.ResponseWriter, r *http.Request) {
-  json.NewEncoder(w).Encode(heartbeatResponse{Status: "OK", Code: 200})
+  json.NewEncoder(w).Encode(heartbeatResponse{Status: "OK", Code: 200, Message:""})
 }
 
 func update(w http.ResponseWriter, r *http.Request){
@@ -57,7 +59,7 @@ func update(w http.ResponseWriter, r *http.Request){
 }
 
 func message(w http.ResponseWriter, r *http.Request){
-  json.NewEncoder(w).Encode(messageResponse{Message:""})
+  json.NewEncoder(w).Encode(messageResponse{Message:"", Status:false})
 }
 
 
