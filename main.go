@@ -55,7 +55,7 @@ func heartbeat(w http.ResponseWriter, r *http.Request) {
 }
 
 func update(w http.ResponseWriter, r *http.Request){
-  json.NewEncoder(w).Encode(updateResponse{Version:"0.9.11"})
+  json.NewEncoder(w).Encode(updateResponse{Version:"1.0.0"})
 }
 
 func message(w http.ResponseWriter, r *http.Request){
